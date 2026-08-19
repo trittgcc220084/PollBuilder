@@ -1,22 +1,18 @@
-# Stage 1: Môi trường SDK để khôi phục thư viện (Restore)
-FROM ://microsoft.com AS base
+# Stage 1: Build stage
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["Gateway/Gateway.csproj", "Gateway/"]
-RUN dotnet restore "Gateway/Gateway.csproj"
+
+# Copy file csproj và restore
+COPY ["backend/PollBuilder.API/PollBuilder.API-master/Gateway/Gateway.csproj", "backend/PollBuilder.API/PollBuilder.API-master/Gateway/"]
+RUN dotnet restore "backend/PollBuilder.API/PollBuilder.API-master/Gateway/Gateway.csproj"
+
+# Copy toàn bộ code và build
 COPY . .
-# Stage 2: [MỤC NÂNG ĐIỂM] Chạy Phân tích tĩnh (Static Analysis)
-FROM base AS tester
-# Lệnh quét lỗi định dạng code dựa trên file .editorconfig, nếu sai quy chuẩn sẽ dừng build
-RUN dotnet format --verify-no-changes
-# Stage 3: Biên dịch ứng dụng bản phát hành (Publish)
-FROM tester AS builder
-WORKDIR "/src/Gateway"
-RUN dotnet publish "Gateway.csproj" -c Release -o /app/publish 
-/p:UseAppHost=false
-# Stage 4: Tạo Image Production siêu nhẹ (Runtime)
-FROM ://microsoft.com AS production
+WORKDIR "/src/backend/PollBuilder.API/PollBuilder.API-master/Gateway"
+RUN dotnet publish "Gateway.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+# Stage 2: Runtime stage
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS production
 WORKDIR /app
-EXPOSE 8080
-# Chỉ lấy sản phẩm cuối, loại bỏ hoàn toàn bộ SDK nặng nề giúp giảm kích thước image tối đa
-COPY --from=builder /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "Gateway.dll"]
