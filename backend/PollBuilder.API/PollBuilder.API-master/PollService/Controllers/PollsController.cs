@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
 using PollService.Contracts;
 using PollService.Services;
@@ -57,15 +57,15 @@ namespace PollService.Controllers
                 return NotFound(new { error = "Poll not found." });
             }
 
-            // Gửi thông báo đóng poll sang RealtimeService
+            // Gửi thông báo đóng poll sang RealtimeService trên Render
             try
             {
                 using var http = new HttpClient();
-                await http.PostAsJsonAsync("http://localhost:5003/api/notify/close", new { Code = code });
+                await http.PostAsJsonAsync("https://pollbuilder-realtimeservice.onrender.com/api/notify/close", new { Code = code });
             }
             catch
             {
-                // Bỏ qua nếu RealtimeService chưa chạy, không làm fail API close
+                // Bỏ qua nếu RealtimeService gặp sự cố, không ngắt chuỗi API Close
             }
 
             return Ok(poll);

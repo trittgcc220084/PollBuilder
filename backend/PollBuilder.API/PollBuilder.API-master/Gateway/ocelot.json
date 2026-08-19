@@ -1,18 +1,6 @@
 {
     "Routes": [
         {
-            "DownstreamPathTemplate": "/api/polls/{everything}",
-            "DownstreamScheme": "https",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "pollbuilder-pollservice.onrender.com",
-                    "Port": 443
-                }
-            ],
-            "UpstreamPathTemplate": "/api/polls/{everything}",
-            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
-        },
-        {
             "DownstreamPathTemplate": "/api/polls",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
@@ -25,15 +13,15 @@
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
         },
         {
-            "DownstreamPathTemplate": "/api/votes/{everything}",
+            "DownstreamPathTemplate": "/api/polls/{everything}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
-                    "Host": "pollbuilder-voteservice.onrender.com",
+                    "Host": "pollbuilder-pollservice.onrender.com",
                     "Port": 443
                 }
             ],
-            "UpstreamPathTemplate": "/api/votes/{everything}",
+            "UpstreamPathTemplate": "/api/polls/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
         },
         {
@@ -49,15 +37,15 @@
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
         },
         {
-            "DownstreamPathTemplate": "/hubs/{everything}",
+            "DownstreamPathTemplate": "/api/votes/{everything}",
             "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
-                    "Host": "pollbuilder-realtimeservice.onrender.com",
+                    "Host": "pollbuilder-voteservice.onrender.com",
                     "Port": 443
                 }
             ],
-            "UpstreamPathTemplate": "/hubs/{everything}",
+            "UpstreamPathTemplate": "/api/votes/{everything}",
             "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
         }
     ],
