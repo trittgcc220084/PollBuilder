@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System.Net.Http.Json;
+using Microsoft.AspNetCore.Mvc;
 using VoteService.Contracts;
 using VoteService.Services;
 
@@ -7,20 +6,15 @@ namespace VoteService.Controllers
 {
     [ApiController]
     [Route("api/polls")]
-    public class VotesController : ControllerBase
+    public class VotesController(IVoteService votes) : ControllerBase
     {
-        private readonly IVoteService _votes;
+        private readonly IVoteService _votes = votes;
         private const string VoterCookie = "voter_token";
-
-        public VotesController(IVoteService votes)
-        {
-            _votes = votes;
-        }
 
         [HttpPost("{code}/vote")]
         public async Task<ActionResult<PollResultsDto>> Vote(string code, [FromBody] VoteRequest request)
         {
-            var token = GetOrCreateVoterToken();
+            string token = GetOrCreateVoterToken();
 
             try
             {
@@ -32,10 +26,10 @@ namespace VoteService.Controllers
                     try
                     {
                         using var http = new HttpClient();
-                        await http.PostAsJsonAsync("http://localhost:5003/api/notify/vote", new
+                        _ = await http.PostAsJsonAsync("http://localhost:5003/api/notify/vote", new
                         {
                             Code = code,
-                            Results = result.Results
+                            result.Results
                         });
                     }
                     catch
@@ -62,7 +56,7 @@ namespace VoteService.Controllers
 
         private string GetOrCreateVoterToken()
         {
-            if (Request.Cookies.TryGetValue(VoterCookie, out var token) && !string.IsNullOrEmpty(token))
+            if (Request.Cookies.TryGetValue(VoterCookie, out string? token) && !string.IsNullOrEmpty(token))
             {
                 return token;
             }

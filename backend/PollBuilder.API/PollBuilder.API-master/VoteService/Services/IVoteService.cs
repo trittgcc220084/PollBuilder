@@ -1,9 +1,10 @@
-﻿using VoteService.Contracts;
+using VoteService.Contracts;
 
-namespace VoteService.Services;
-
-public interface IVoteService
+namespace VoteService.Services
 {
-    Task<VoteResultDto> VoteAsync(string code, int optionIndex, string
-voterToken);
+    public interface IVoteService
+    {
+        Task<VoteResultDto> VoteAsync(string code, int optionIndex, string
+    voterToken);
+    }
 }

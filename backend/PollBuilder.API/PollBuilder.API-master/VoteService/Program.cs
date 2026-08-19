@@ -4,30 +4,46 @@ using VoteService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// 1. Logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
+// 2. Services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Neon / PostgreSQL (dùng chung database với PollService)
-var conn = builder.Configuration.GetConnectionString("DefaultConnection"); // ← đã sửa
+// 3. PostgreSQL Connection
+string? conn = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrWhiteSpace(conn))
+{
+    throw new InvalidOperationException("LỖI: Chưa khai báo 'DefaultConnection'!");
+}
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(conn));
 
 builder.Services.AddScoped<IVoteService, VoteService.Services.VoteService>();
 
+// 4. CORS Policy
 builder.Services.AddCors(o => o.AddPolicy("AllowAll", p =>
     p.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod()));
 
+// 5. Port linh hoạt từ Render
+string port = Environment.GetEnvironmentVariable("PORT") ?? "5002";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
-// Không cần EnsureCreated nữa vì PollService đã tạo bảng rồi
-// using (var scope = app.Services.CreateScope()) { ... }
-
-if (app.Environment.IsDevelopment())
+// 6. Bật Swagger trên cả Production
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "VoteService API v1");
+});
+
+// 7. Endpoint Health Check
+app.MapGet("/", () => Results.Ok("VoteService API is running!"));
 
 app.UseCors("AllowAll");
 app.MapControllers();
