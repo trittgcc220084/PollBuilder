@@ -18,7 +18,6 @@ async function request(url, options = {}) {
       ...defaultHeaders,
       ...(options.headers || {}),
     },
-    credentials: 'include', // Gửi kèm cookie nếu có
   }
 
   try {
