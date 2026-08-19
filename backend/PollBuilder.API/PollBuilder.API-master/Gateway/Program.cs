@@ -24,14 +24,16 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddOcelot(builder.Configuration);
 
+// 4. Lấy PORT từ biến môi trường của Render (mặc định 8080 nếu chạy local)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
-// 4. Đặt UseCors TRƯỚC UseWebSockets và UseOcelot
+// 5. Đặt UseCors TRƯỚC UseWebSockets và UseOcelot
 app.UseCors("AllowFrontend");
-
 app.UseWebSockets();
 
 await app.UseOcelot();
 
-// 5. Ép Gateway luôn lắng nghe đúng Port 5005
-app.Run("http://localhost:5005");
+app.Run();
