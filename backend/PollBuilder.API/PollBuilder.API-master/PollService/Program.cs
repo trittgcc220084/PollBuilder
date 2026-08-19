@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (string.IsNullOrWhiteSpace(connectionString))
 {
-    throw new InvalidOperationException("LỖI: Chưa khai báo 'DefaultConnection' trong file appsettings.json!");
+    throw new InvalidOperationException("LỖI: Chưa khai báo 'DefaultConnection' trong file appsettings.json hoặc biến môi trường!");
 }
 
 // 4. Cấu hình DbContext kết nối PostgreSQL (Neon DB)
@@ -38,26 +38,32 @@ builder.Services.AddCors(options =>
     });
 });
 
+// 7. Lấy PORT linh hoạt từ Render (Mặc định 5001 khi chạy local)
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5001";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
 var app = builder.Build();
 
-// 7. Bật Swagger Middleware
+// 8. Bật Swagger Middleware
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "PollService API v1");
 });
 
-// 8. Tự động kiểm tra và tạo bảng trên Neon DB khi khởi chạy
+// 9. Tự động kiểm tra và tạo bảng trên Neon DB khi khởi chạy
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate();
 }
 
-// 9. Middleware pipeline
+// 10. Endpoint Health Check cho Render / Trang chủ
+app.MapGet("/", () => Results.Ok("PollService API is running!"));
+
+// 11. Middleware pipeline
 app.UseCors("AllowAll");
 app.UseAuthorization();
 app.MapControllers();
 
-// 10. Lắng nghe tại Port 5001
-app.Run("http://localhost:5001");
+app.Run();
