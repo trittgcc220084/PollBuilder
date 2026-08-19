@@ -1,64 +1,28 @@
 {
     "Routes": [
         {
-            "DownstreamPathTemplate": "/",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "localhost",
-                    "Port": 8080
-                }
-            ],
-            "UpstreamPathTemplate": "/",
-            "UpstreamHttpMethod": [ "Get", "Head" ]
-        },
-        {
-            "DownstreamPathTemplate": "/api/polls/{code}/vote",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "localhost",
-                    "Port": 5002
-                }
-            ],
-            "UpstreamPathTemplate": "/api/polls/{code}/vote",
-            "UpstreamHttpMethod": [ "Post", "Options" ]
-        },
-        {
-            "DownstreamPathTemplate": "/api/polls",
-            "DownstreamScheme": "http",
-            "DownstreamHostAndPorts": [
-                {
-                    "Host": "localhost",
-                    "Port": 5001
-                }
-            ],
-            "UpstreamPathTemplate": "/api/polls",
-            "UpstreamHttpMethod": [ "Get", "Post", "Options" ]
-        },
-        {
             "DownstreamPathTemplate": "/api/polls/{everything}",
-            "DownstreamScheme": "http",
+            "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
-                    "Host": "localhost",
-                    "Port": 5001
+                    "Host": "pollbuilder-pollservice.onrender.com",
+                    "Port": 443
                 }
             ],
             "UpstreamPathTemplate": "/api/polls/{everything}",
-            "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete", "Patch", "Options" ]
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
         },
         {
-            "DownstreamPathTemplate": "/hubs/{everything}",
-            "DownstreamScheme": "http",
+            "DownstreamPathTemplate": "/api/votes/{everything}",
+            "DownstreamScheme": "https",
             "DownstreamHostAndPorts": [
                 {
-                    "Host": "localhost",
-                    "Port": 5003
+                    "Host": "pollbuilder-voteservice.onrender.com",
+                    "Port": 443
                 }
             ],
-            "UpstreamPathTemplate": "/hubs/{everything}",
-            "UpstreamHttpMethod": [ "Get", "Post", "Options" ]
+            "UpstreamPathTemplate": "/api/votes/{everything}",
+            "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS" ]
         }
     ],
     "GlobalConfiguration": {
