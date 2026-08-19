@@ -1,6 +1,6 @@
 using RealtimeService.Hubs;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // 1. Tắt EventLog để tránh lỗi crash khi dừng service
 builder.Logging.ClearProviders();
@@ -15,7 +15,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.SetIsOriginAllowed(_ => true)
+        _ = policy.SetIsOriginAllowed(_ => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -26,7 +26,7 @@ builder.Services.AddCors(options =>
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5003";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 app.UseCors("AllowFrontend");
 
