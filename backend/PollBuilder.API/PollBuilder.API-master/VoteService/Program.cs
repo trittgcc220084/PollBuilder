@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using VoteService.Data;
 using VoteService.Services;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // 1. Logging
 builder.Logging.ClearProviders();
@@ -33,7 +33,7 @@ builder.Services.AddCors(o => o.AddPolicy("AllowAll", p =>
 string port = Environment.GetEnvironmentVariable("PORT") ?? "5002";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // 6. Bật Swagger trên cả Production
 app.UseSwagger();

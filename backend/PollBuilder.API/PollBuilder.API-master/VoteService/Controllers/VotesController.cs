@@ -18,7 +18,7 @@ namespace VoteService.Controllers
 
             try
             {
-                var result = await _votes.VoteAsync(code, request.OptionIndex, token);
+                VoteResultDto result = await _votes.VoteAsync(code, request.OptionIndex, token);
 
                 // Gửi thông báo realtime sang RealtimeService nếu là vote mới
                 if (result.IsNewVote)

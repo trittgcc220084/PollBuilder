@@ -12,7 +12,7 @@ namespace VoteService.Services
 
         public async Task<VoteResultDto> VoteAsync(string code, int optionIndex, string voterToken)
         {
-            var poll = await _db.Polls
+            Poll? poll = await _db.Polls
                 .Include(p => p.Votes)
                 .FirstOrDefaultAsync(p => p.Code == code);
 
@@ -30,7 +30,7 @@ namespace VoteService.Services
                 throw new InvalidOperationException("Poll is closed.");
             }
 
-            var options = JsonSerializer.Deserialize<List<string>>(poll.OptionsJson) ?? [];
+            List<string> options = JsonSerializer.Deserialize<List<string>>(poll.OptionsJson) ?? [];
 
             if (optionIndex < 0 || optionIndex >= options.Count)
             {
