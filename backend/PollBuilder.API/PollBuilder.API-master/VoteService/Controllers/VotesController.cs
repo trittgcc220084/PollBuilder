@@ -5,20 +5,22 @@ using VoteService.Services;
 namespace VoteService.Controllers
 {
     [ApiController]
-    [Route("api/polls")]
-    public class VotesController(IVoteService votes) : ControllerBase
+    [Route("api/votes")]
+    public class VotesController(IVoteService votes, IConfiguration config) : ControllerBase
     {
         private readonly IVoteService _votes = votes;
+        private readonly string _realtimeServiceUrl = config["REALTIME_SERVICE_URL"] ?? "http://pollbuilder-realtimeservice:8080";
         private const string VoterCookie = "voter_token";
 
-        [HttpPost("{code}/vote")]
-        public async Task<ActionResult<PollResultsDto>> Vote(string code, [FromBody] VoteRequest request)
+        [HttpPost]
+        public async Task<ActionResult<PollResultsDto>> Vote([FromBody] VoteRequest request)
         {
             string token = GetOrCreateVoterToken();
 
             try
             {
-                VoteResultDto result = await _votes.VoteAsync(code, request.OptionIndex, token);
+                // Sử dụng request.PollCode từ gói dữ liệu JSON Frontend gửi lên
+                VoteResultDto result = await _votes.VoteAsync(request.PollCode, request.OptionIndex, token);
 
                 // Gửi thông báo realtime sang RealtimeService nếu là vote mới
                 if (result.IsNewVote)
@@ -26,15 +28,17 @@ namespace VoteService.Controllers
                     try
                     {
                         using var http = new HttpClient();
-                        _ = await http.PostAsJsonAsync("http://localhost:5003/api/notify/vote", new
+                        string notifyUrl = $"{_realtimeServiceUrl.TrimEnd('/')}/api/notify/vote";
+
+                        _ = await http.PostAsJsonAsync(notifyUrl, new
                         {
-                            Code = code,
+                            Code = request.PollCode,
                             result.Results
                         });
                     }
                     catch
                     {
-                        // Nếu RealtimeService chưa chạy thì bỏ qua, không làm fail tiến trình vote
+                        // Nếu RealtimeService chưa phản hồi thì bỏ qua, đảm bảo tiến trình vote luôn thành công
                     }
                 }
 
@@ -66,8 +70,8 @@ namespace VoteService.Controllers
             Response.Cookies.Append(VoterCookie, token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false,
-                SameSite = SameSiteMode.Lax,
+                Secure = true, // Bật Secure = true để hoạt động chuẩn HTTPS trên Render
+                SameSite = SameSiteMode.None, // Dùng None cho kết nối Cross-Site giữa Vercel & Render
                 Expires = DateTimeOffset.UtcNow.AddDays(30)
             });
 
