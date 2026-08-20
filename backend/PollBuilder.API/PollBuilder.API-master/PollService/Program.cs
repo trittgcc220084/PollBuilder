@@ -32,10 +32,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.SetIsOriginAllowed(origin => true) // Cho phép mọi Domain nhưng vẫn hỗ trợ Credentials
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials(); // Bật cái này lên để hết lỗi
+        policy
+            .AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
     });
 });
 
