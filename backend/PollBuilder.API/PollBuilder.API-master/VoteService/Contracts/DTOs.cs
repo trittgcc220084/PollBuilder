@@ -4,6 +4,8 @@ namespace VoteService.Contracts
 {
     public class VoteRequest
     {
+        public string PollCode { get; set; } = string.Empty;
+
         [Range(0, 100)]
         public int OptionIndex { get; set; }
     }
