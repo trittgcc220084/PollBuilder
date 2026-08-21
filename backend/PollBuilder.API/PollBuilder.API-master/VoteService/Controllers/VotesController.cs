@@ -71,7 +71,7 @@ namespace VoteService.Controllers
             {
                 HttpOnly = true,
                 Secure = true, // Bật Secure = true để hoạt động chuẩn HTTPS trên Render
-                SameSite = SameSiteMode.None, // Dùng None cho kết nối Cross-Site giữa Vercel & Render
+                SameSite = SameSiteMode.None, 
                 Expires = DateTimeOffset.UtcNow.AddDays(30)
             });
 

@@ -16,7 +16,7 @@ namespace VoteService.Services
                 .Include(p => p.Votes)
                 .FirstOrDefaultAsync(p => p.Code == code);
 
-            // ========== LOG TẠM ==========
+            
             Console.WriteLine($">>> [VoteService] Code={code}, Found={poll != null}, IsClosed={poll?.IsClosed}, VotesCount={poll?.Votes?.Count}");
             // =============================
 

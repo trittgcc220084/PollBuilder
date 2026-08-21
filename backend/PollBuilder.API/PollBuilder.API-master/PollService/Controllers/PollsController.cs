@@ -19,6 +19,16 @@ namespace PollService.Controllers
         [HttpPost]
         public async Task<ActionResult<PollDto>> Create([FromBody] CreatePollRequest request)
         {
+            if (string.IsNullOrWhiteSpace(request.Question) || request.Question.Length < 5)
+            {
+                return BadRequest(new { error = "The question must be at least 5 characters long!" });
+            }
+
+            if (request.Options == null || request.Options.Count < 2 || request.Options.Count > 6)
+            {
+                return BadRequest(new { error = "The number of options must be between 2 and 6.!" });
+            }
+
             try
             {
                 var poll = await _polls.CreatePollAsync(request.Question, request.Options);
@@ -65,7 +75,7 @@ namespace PollService.Controllers
             }
             catch
             {
-                // Bỏ qua nếu RealtimeService gặp sự cố, không ngắt chuỗi API Close
+
             }
 
             return Ok(poll);
